@@ -1,15 +1,8 @@
 import "~/styles/globals.css";
 
+import { ClerkProvider } from "@clerk/nextjs";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -28,18 +21,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`}>
-        <body>
-          <header className="flex justify-end p-4">
-            <SignedOut>
-              <SignInButton mode="modal" />
-              <SignUpButton mode="modal" />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
-          {children}
-        </body>
+        <body>{children}</body>
       </html>
     </ClerkProvider>
   );
