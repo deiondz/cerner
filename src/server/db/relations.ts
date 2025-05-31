@@ -1,28 +1,17 @@
 import { relations } from "drizzle-orm/relations";
-import { wards, workers, households, scanlogs, citizenreports } from "./schema";
+import { workers, wards, households, scanlogs, citizenreports } from "./schema";
 
-export const workersRelations = relations(workers, ({ one, many }) => ({
-  ward_workerId: one(wards, {
-    fields: [workers.workerId],
-    references: [wards.supervisorId],
-    relationName: "workers_workerId_wards_supervisorId",
-  }),
-  ward_wardAssigned: one(wards, {
-    fields: [workers.wardAssigned],
-    references: [wards.wardCode],
-    relationName: "workers_wardAssigned_wards_wardCode",
-  }),
-  scanlogs: many(scanlogs),
-}));
-
-export const wardsRelations = relations(wards, ({ many }) => ({
-  workers_workerId: many(workers, {
-    relationName: "workers_workerId_wards_supervisorId",
-  }),
-  workers_wardAssigned: many(workers, {
-    relationName: "workers_wardAssigned_wards_wardCode",
+export const wardsRelations = relations(wards, ({ one, many }) => ({
+  worker: one(workers, {
+    fields: [wards.supervisorId],
+    references: [workers.workerId],
   }),
   households: many(households),
+}));
+
+export const workersRelations = relations(workers, ({ many }) => ({
+  wards: many(wards),
+  scanlogs: many(scanlogs),
 }));
 
 export const householdsRelations = relations(households, ({ one, many }) => ({

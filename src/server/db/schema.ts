@@ -1,111 +1,133 @@
 import {
   pgTable,
-  unique,
-  varchar,
-  foreignKey,
+  uuid,
+  text,
   timestamp,
+  foreignKey,
   numeric,
   boolean,
-  text,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+export const workers = pgTable("workers", {
+  workerId: uuid("worker_id")
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey()
+    .notNull(),
+  name: text().notNull(),
+  contactNumber: text("contact_number").notNull(),
+  wardAssigned: text("ward_assigned").notNull(),
+  dateCreated: timestamp("date_created", { withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  dateDeleted: timestamp("date_deleted", {
+    withTimezone: true,
+    mode: "string",
+  }),
+  deviceId: text("device_id"),
+});
 
 export const wards = pgTable(
   "wards",
   {
-    wardCode: varchar("ward_code").primaryKey().notNull(),
-    name: varchar(),
-    supervisorId: varchar("supervisor_id").default("NULL "),
-  },
-  (table) => [unique("wards_supervisor_id_key").on(table.supervisorId)],
-);
-
-export const workers = pgTable(
-  "workers",
-  {
-    workerId: varchar("worker_id").primaryKey().notNull(),
-    name: varchar(),
-    contactNumber: varchar("contact_number"),
-    wardAssigned: varchar("ward_assigned"),
-    dateCreated: timestamp("date_created", { mode: "string" }),
-    dateDeleted: timestamp("date_deleted", { mode: "string" }),
-    deviceId: varchar("device_id"),
+    wardCode: text("ward_code").primaryKey().notNull(),
+    name: text().notNull(),
+    supervisorId: uuid("supervisor_id"),
   },
   (table) => [
     foreignKey({
-      columns: [table.workerId],
-      foreignColumns: [wards.supervisorId],
-      name: "fk_supervisor",
-    }),
-    foreignKey({
-      columns: [table.wardAssigned],
-      foreignColumns: [wards.wardCode],
-      name: "fk_ward",
-    }),
+      columns: [table.supervisorId],
+      foreignColumns: [workers.workerId],
+      name: "wards_supervisor_id_fkey",
+    }).onDelete("set null"),
   ],
 );
 
 export const households = pgTable(
   "households",
   {
-    nfcId: varchar("nfc_id").primaryKey().notNull(),
-    wardCode: varchar("ward_code"),
-    householdId: varchar("household_id"),
-    ownerNumber: varchar("owner_number"),
-    address: varchar(),
-    dateCreated: timestamp("date_created", { mode: "string" }),
-    dateUpdated: timestamp("date_updated", { mode: "string" }),
-    status: varchar(),
+    nfcId: uuid("nfc_id")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    wardCode: text("ward_code").notNull(),
+    householdId: text("household_id").notNull(),
+    ownerNumber: text("owner_number").notNull(),
+    address: text().notNull(),
+    dateCreated: timestamp("date_created", {
+      withTimezone: true,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    dateUpdated: timestamp("date_updated", {
+      withTimezone: true,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    status: text().notNull(),
   },
   (table) => [
     foreignKey({
       columns: [table.wardCode],
       foreignColumns: [wards.wardCode],
-      name: "fk_household_ward",
-    }),
+      name: "households_ward_code_fkey",
+    }).onDelete("cascade"),
   ],
 );
 
 export const scanlogs = pgTable(
   "scanlogs",
   {
-    scanId: varchar("scan_id").primaryKey().notNull(),
-    nfcId: varchar("nfc_id"),
-    workerId: varchar("worker_id"),
-    timestamp: timestamp({ mode: "string" }),
-    gpsLatitude: numeric("gps_latitude", { precision: 9, scale: 6 }),
-    gpsLongitude: numeric("gps_longitude", { precision: 9, scale: 6 }),
-    syncStatus: boolean("sync_status"),
-    scanMethod: varchar("scan_method"),
+    scanId: uuid("scan_id")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    nfcId: uuid("nfc_id").notNull(),
+    workerId: uuid("worker_id").notNull(),
+    timestamp: timestamp({ withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    gpsLatitude: numeric("gps_latitude"),
+    gpsLongitude: numeric("gps_longitude"),
+    syncStatus: boolean("sync_status").default(false).notNull(),
+    scanMethod: text("scan_method").notNull(),
   },
   (table) => [
     foreignKey({
       columns: [table.nfcId],
       foreignColumns: [households.nfcId],
-      name: "fk_scan_nfc",
-    }),
+      name: "scanlogs_nfc_id_fkey",
+    }).onDelete("cascade"),
     foreignKey({
       columns: [table.workerId],
       foreignColumns: [workers.workerId],
-      name: "fk_scan_worker",
-    }),
+      name: "scanlogs_worker_id_fkey",
+    }).onDelete("set null"),
   ],
 );
 
 export const citizenreports = pgTable(
   "citizenreports",
   {
-    reportId: varchar("report_id").primaryKey().notNull(),
-    nfcId: varchar("nfc_id"),
-    citizenContact: varchar("citizen_contact"),
-    timestamp: timestamp({ mode: "string" }),
-    status: varchar(),
+    reportId: uuid("report_id")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    nfcId: uuid("nfc_id").notNull(),
+    citizenContact: text("citizen_contact").notNull(),
+    timestamp: timestamp({ withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    status: text().notNull(),
     additionalNotes: text("additional_notes"),
   },
   (table) => [
     foreignKey({
       columns: [table.nfcId],
       foreignColumns: [households.nfcId],
-      name: "fk_report_nfc",
-    }),
+      name: "citizenreports_nfc_id_fkey",
+    }).onDelete("cascade"),
   ],
 );
