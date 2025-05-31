@@ -30,7 +30,10 @@ export const workers = pgTable("workers", {
 export const wards = pgTable(
   "wards",
   {
-    wardCode: text("ward_code").primaryKey().notNull(),
+    wardCode: uuid("ward_code")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
     name: text().notNull(),
     supervisorId: uuid("supervisor_id"),
   },
@@ -50,7 +53,7 @@ export const households = pgTable(
       .default(sql`uuid_generate_v4()`)
       .primaryKey()
       .notNull(),
-    wardCode: text("ward_code").notNull(),
+    wardCode: uuid("ward_code").notNull(),
     householdId: text("household_id").notNull(),
     ownerNumber: text("owner_number").notNull(),
     address: text().notNull(),

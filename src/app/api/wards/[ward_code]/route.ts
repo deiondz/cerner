@@ -81,3 +81,38 @@ export const PUT = async (
     );
   }
 };
+
+export const DELETE = async (
+  _req: NextRequest,
+  { params }: { params: { ward_code: string } },
+) => {
+  try {
+    const { ward_code } = params;
+    if (!ward_code) {
+      return NextResponse.json(
+        { error: "ward_code is required" },
+        { status: 400 },
+      );
+    }
+    const result = await db
+      .delete(wards)
+      .where(eq(wards.wardCode, ward_code))
+      .returning();
+    if (!result.length) {
+      return NextResponse.json(
+        { error: "Ward not found or not deleted" },
+        { status: 404 },
+      );
+    }
+    return NextResponse.json(
+      { message: "Ward deleted successfully" },
+      { status: 200 },
+    );
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error("Unknown error");
+    return NextResponse.json(
+      { error: "Failed to delete ward", details: error.message },
+      { status: 500 },
+    );
+  }
+};

@@ -3,6 +3,9 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Sidebar } from "~/components/sidebar";
+import { Header } from "~/components/header";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -21,7 +24,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`}>
-        <body>{children}</body>
+        <body>
+          <div className="bg-background flex h-screen">
+            <Sidebar />
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <Header />
+              <main className="flex-1 overflow-y-auto p-6">{children}</main>
+            </div>
+          </div>
+          <Toaster />
+        </body>
       </html>
     </ClerkProvider>
   );
