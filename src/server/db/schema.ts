@@ -1,49 +1,32 @@
+import { sql } from "drizzle-orm";
 import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
   foreignKey,
   numeric,
-  boolean,
+  pgTable,
+  text,
+  timestamp,
+  unique,
+  uuid,
+  type UniqueConstraintBuilder,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
-
-export const workers = pgTable("workers", {
-  workerId: uuid("worker_id")
-    .default(sql`uuid_generate_v4()`)
-    .primaryKey()
-    .notNull(),
-  name: text().notNull(),
-  contactNumber: text("contact_number").notNull(),
-  wardAssigned: text("ward_assigned").notNull(),
-  dateCreated: timestamp("date_created", { withTimezone: true, mode: "string" })
-    .defaultNow()
-    .notNull(),
-  dateDeleted: timestamp("date_deleted", {
-    withTimezone: true,
-    mode: "string",
-  }),
-  deviceId: text("device_id"),
-});
 
 export const wards = pgTable(
   "wards",
   {
-    wardCode: uuid("ward_code")
+    wardId: uuid("ward_id")
       .default(sql`uuid_generate_v4()`)
       .primaryKey()
       .notNull(),
-    name: text().notNull(),
+    wardName: text("ward_name").notNull(),
     supervisorId: uuid("supervisor_id"),
   },
-  (table) => [
-    foreignKey({
+  (table): { fk: ReturnType<typeof foreignKey> } => ({
+    fk: foreignKey({
       columns: [table.supervisorId],
       foreignColumns: [workers.workerId],
       name: "wards_supervisor_id_fkey",
     }).onDelete("set null"),
-  ],
+  }),
 );
 
 export const households = pgTable(
@@ -53,8 +36,6 @@ export const households = pgTable(
       .default(sql`uuid_generate_v4()`)
       .primaryKey()
       .notNull(),
-    wardCode: uuid("ward_code").notNull(),
-    householdId: text("household_id").notNull(),
     ownerNumber: text("owner_number").notNull(),
     address: text().notNull(),
     dateCreated: timestamp("date_created", {
@@ -70,14 +51,49 @@ export const households = pgTable(
       .defaultNow()
       .notNull(),
     status: text().notNull(),
+    wardId: uuid("ward_id").notNull(),
   },
-  (table) => [
-    foreignKey({
-      columns: [table.wardCode],
-      foreignColumns: [wards.wardCode],
+  (table): { fk: ReturnType<typeof foreignKey> } => ({
+    fk: foreignKey({
+      columns: [table.wardId],
+      foreignColumns: [wards.wardId],
       name: "households_ward_code_fkey",
     }).onDelete("cascade"),
-  ],
+  }),
+);
+
+export const workers = pgTable(
+  "workers",
+  {
+    workerId: uuid("worker_id")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    workerName: text("worker_name").notNull(),
+    contactNumber: text("contact_number").notNull(),
+    dateCreated: timestamp("date_created", {
+      withTimezone: true,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    wardId: uuid("ward_id"),
+  },
+  (
+    table,
+  ): {
+    fk: ReturnType<typeof foreignKey>;
+    uniqueContact: UniqueConstraintBuilder;
+  } => ({
+    fk: foreignKey({
+      columns: [table.wardId],
+      foreignColumns: [wards.wardId],
+      name: "workers_ward_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    uniqueContact: unique("workers_contact_number_key").on(table.contactNumber),
+  }),
 );
 
 export const scanlogs = pgTable(
@@ -94,21 +110,24 @@ export const scanlogs = pgTable(
       .notNull(),
     gpsLatitude: numeric("gps_latitude"),
     gpsLongitude: numeric("gps_longitude"),
-    syncStatus: boolean("sync_status").default(false).notNull(),
-    scanMethod: text("scan_method").notNull(),
   },
-  (table) => [
-    foreignKey({
+  (
+    table,
+  ): {
+    fk1: ReturnType<typeof foreignKey>;
+    fk2: ReturnType<typeof foreignKey>;
+  } => ({
+    fk1: foreignKey({
       columns: [table.nfcId],
       foreignColumns: [households.nfcId],
       name: "scanlogs_nfc_id_fkey",
     }).onDelete("cascade"),
-    foreignKey({
+    fk2: foreignKey({
       columns: [table.workerId],
       foreignColumns: [workers.workerId],
       name: "scanlogs_worker_id_fkey",
     }).onDelete("set null"),
-  ],
+  }),
 );
 
 export const citizenreports = pgTable(
@@ -126,11 +145,11 @@ export const citizenreports = pgTable(
     status: text().notNull(),
     additionalNotes: text("additional_notes"),
   },
-  (table) => [
-    foreignKey({
+  (table): { fk: ReturnType<typeof foreignKey> } => ({
+    fk: foreignKey({
       columns: [table.nfcId],
       foreignColumns: [households.nfcId],
       name: "citizenreports_nfc_id_fkey",
     }).onDelete("cascade"),
-  ],
+  }),
 );

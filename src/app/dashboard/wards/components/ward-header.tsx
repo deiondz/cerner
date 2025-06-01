@@ -1,5 +1,8 @@
+"use client";
+
+import { Loader2, Plus } from "lucide-react";
+import { useState, useTransition } from "react";
 import { Button } from "~/components/ui/button";
-import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { useState } from "react";
-import type { Ward } from "~/types/ward";
-import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -20,28 +21,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import type { Worker } from "~/server/db/types";
 
 interface WardHeaderProps {
-  onCreateWard: (
-    ward: Omit<
-      Ward,
-      "supervisor_name" | "worker_count" | "household_count" | "status"
-    >,
-  ) => void;
+  supervisors: Worker[];
 }
 
-export default function WardHeader({ onCreateWard }: WardHeaderProps) {
+export default function WardHeader({ supervisors }: WardHeaderProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [formData, setFormData] = useState({
     ward_code: "",
     name: "",
     supervisor_id: "",
   });
 
-  const handleCreateWard = () => {
-    onCreateWard(formData);
-    setFormData({ ward_code: "", name: "", supervisor_id: "" });
-    setIsCreateDialogOpen(false);
+  const handleCreateWard = async () => {
+    startTransition(async () => {
+      console.log(formData);
+      setFormData({ ward_code: "", name: "", supervisor_id: "" });
+      setIsCreateDialogOpen(false);
+    });
   };
 
   return (
@@ -68,20 +68,6 @@ export default function WardHeader({ onCreateWard }: WardHeaderProps) {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="ward_code" className="text-right">
-                Ward Code
-              </Label>
-              <Input
-                id="ward_code"
-                value={formData.ward_code}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setFormData({ ...formData, ward_code: e.target.value })
-                }
-                className="col-span-3"
-                placeholder="W04"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Ward Name
               </Label>
@@ -95,7 +81,7 @@ export default function WardHeader({ onCreateWard }: WardHeaderProps) {
                 placeholder="East Ward"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid w-full grid-cols-4 items-center gap-4">
               <Label htmlFor="supervisor" className="text-right">
                 Supervisor
               </Label>
@@ -106,18 +92,35 @@ export default function WardHeader({ onCreateWard }: WardHeaderProps) {
                 }
               >
                 <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select supervisor" />
+                  <SelectValue
+                    placeholder="Select supervisor"
+                    className="col-span-3"
+                  />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="S004">David Wilson</SelectItem>
-                  <SelectItem value="S005">Emma Brown</SelectItem>
-                  <SelectItem value="S006">Frank Miller</SelectItem>
+                <SelectContent className="col-span-3">
+                  {/* {supervisors.map((supervisor) => (
+                    <SelectItem
+                      key={supervisor.workerId}
+                      value={supervisor.workerId}
+                    >
+                      {supervisor.name}
+                    </SelectItem>
+                  ))} */}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleCreateWard}>Create Ward</Button>
+            <Button onClick={handleCreateWard} disabled={isPending}>
+              {isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Ward"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,17 +1,12 @@
-import { getWards } from "~/server/db/queries/ward";
+import { getWardTableData } from "./actions/get-table-data";
 import WardTable from "./components/table/ward-table";
 import WardStats from "./components/ward-stats";
-
 export default async function WardsPage() {
-  const wards = await getWards();
-  console.log(wards);
+  const wards = await getWardTableData();
 
   return (
     <div className="space-y-6">
-      {/* <WardHeader onCreateWard={handleCreateWard} /> */}
-      <WardStats wards={wards} />
-      {/* <WardSearch searchTerm={searchTerm} onSearchChange={setSearchTerm} /> */}
-
+      <WardStats wards={[]} />
       <WardTable wards={wards} />
     </div>
   );

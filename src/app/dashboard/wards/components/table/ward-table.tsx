@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import type { Ward } from "~/types/ward";
+import type { Ward } from "~/server/db/types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
