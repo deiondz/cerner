@@ -126,8 +126,8 @@ export default function HouseholdsPage() {
     const newHousehold: Household = {
       ...formData,
       ward_name: "Central Ward", // This would come from API
-      date_created: new Date().toISOString().split("T")[0],
-      date_updated: new Date().toISOString().split("T")[0],
+      date_created: new Date().toISOString().split("T")[0] || "",
+      date_updated: new Date().toISOString().split("T")[0] || "",
       last_scan: "Never",
       status: formData.status as "active" | "inactive" | "suspended",
     };
@@ -163,7 +163,7 @@ export default function HouseholdsPage() {
             ? {
                 ...household,
                 ...formData,
-                date_updated: new Date().toISOString().split("T")[0],
+                date_updated: new Date().toISOString().split("T")[0] || "",
                 status: formData.status as "active" | "inactive" | "suspended",
               }
             : household,

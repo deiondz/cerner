@@ -143,13 +143,13 @@ export const CalendarDatePicker = React.forwardRef<
 
     const handleDateSelect = (range: DateRange | undefined) => {
       if (range) {
-        let from = startOfDay(toDate(range.from as Date, { timeZone }));
+        let from = startOfDay(toDate(range.from!, { timeZone }));
         let to = range.to ? endOfDay(toDate(range.to, { timeZone })) : from;
         if (numberOfMonths === 1) {
           if (range.from !== date.from) {
             to = from;
           } else {
-            from = startOfDay(toDate(range.to as Date, { timeZone }));
+            from = startOfDay(toDate(range.to!, { timeZone }));
           }
         }
         onDateSelect({ from, to });
@@ -310,15 +310,15 @@ export const CalendarDatePicker = React.forwardRef<
       event.preventDefault();
       setSelectedRange(null);
       if (highlightedPart === "firstDay") {
-        const newDate = new Date(date.from as Date);
+        const newDate = new Date(date.from!);
         const increment = event.deltaY > 0 ? -1 : 1;
         newDate.setDate(newDate.getDate() + increment);
-        if (newDate <= (date.to as Date)) {
+        if (newDate <= (date.to!)) {
           numberOfMonths === 2
-            ? onDateSelect({ from: newDate, to: new Date(date.to as Date) })
+            ? onDateSelect({ from: newDate, to: new Date(date.to!) })
             : onDateSelect({ from: newDate, to: newDate });
           setMonthFrom(newDate);
-        } else if (newDate > (date.to as Date) && numberOfMonths === 1) {
+        } else if (newDate > (date.to!) && numberOfMonths === 1) {
           onDateSelect({ from: newDate, to: newDate });
           setMonthFrom(newDate);
         }
@@ -330,11 +330,11 @@ export const CalendarDatePicker = React.forwardRef<
         const newYear = yearFrom + (event.deltaY > 0 ? -1 : 1);
         handleYearChange(newYear, "from");
       } else if (highlightedPart === "secondDay") {
-        const newDate = new Date(date.to as Date);
+        const newDate = new Date(date.to!);
         const increment = event.deltaY > 0 ? -1 : 1;
         newDate.setDate(newDate.getDate() + increment);
-        if (newDate >= (date.from as Date)) {
-          onDateSelect({ from: new Date(date.from as Date), to: newDate });
+        if (newDate >= (date.from!)) {
+          onDateSelect({ from: new Date(date.from!), to: newDate });
           setMonthTo(newDate);
         }
       } else if (highlightedPart === "secondMonth") {

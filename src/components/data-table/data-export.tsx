@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 "use client";
 
 import { Button } from "~/components/ui/button";
@@ -76,13 +77,14 @@ export function DataTableExport<TData extends ExportableData>({
         // This preserves the table's page order in the exported data
         const sortedItems = [...selectedItems];
         const sorting = table.getState().sorting;
-
         if (sorting.length > 0) {
-          const { id: sortField, desc: isDescending } = sorting[0];
+          const sort = sorting[0];
+          const sortField = sort?.id as keyof TData;
+          const isDescending = sort?.desc ?? false;
 
           sortedItems.sort((a, b) => {
-            const valueA = a[sortField as keyof TData];
-            const valueB = b[sortField as keyof TData];
+            const valueA = a[sortField];
+            const valueB = b[sortField];
 
             if (valueA === valueB) return 0;
 

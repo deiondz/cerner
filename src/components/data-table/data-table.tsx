@@ -263,6 +263,7 @@ export function DataTable<TData, TValue>({
             const rowIndex = parseInt(rowId, 10);
             if (rowIndex >= 0 && rowIndex < dataItems.length) {
               const item = dataItems[rowIndex];
+              if (!item) return;
               const itemId = String(item[idField]);
 
               if (isSelected) {
@@ -371,7 +372,7 @@ export function DataTable<TData, TValue>({
         }
       };
 
-      fetchData();
+      void fetchData();
     }
   }, [page, pageSize, search, dateRange, sortBy, sortOrder, fetchDataFn]);
 
@@ -603,19 +604,16 @@ export function DataTable<TData, TValue>({
           columnMapping={exportConfig.columnMapping}
           columnWidths={exportConfig.columnWidths}
           headers={exportConfig.headers}
-          customToolbarComponent={
-            renderToolbarContent &&
-            renderToolbarContent({
-              selectedRows: dataItems.filter(
-                (item) => selectedItemIds[String(item[idField])],
-              ),
-              allSelectedIds: Object.keys(selectedItemIds).map((id) =>
-                parseInt(id, 10),
-              ),
-              totalSelectedCount: totalSelectedItems,
-              resetSelection: clearAllSelections,
-            })
-          }
+          customToolbarComponent={renderToolbarContent?.({
+            selectedRows: dataItems.filter(
+              (item) => selectedItemIds[String(item[idField])],
+            ),
+            allSelectedIds: Object.keys(selectedItemIds).map((id) =>
+              parseInt(id, 10),
+            ),
+            totalSelectedCount: totalSelectedItems,
+            resetSelection: clearAllSelections,
+          })}
         />
       )}
 

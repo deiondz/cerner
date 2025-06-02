@@ -122,7 +122,7 @@ export default function WorkersPage() {
     const newWorker: Worker = {
       ...formData,
       ward_name: "Central Ward", // This would come from API
-      date_created: new Date().toISOString().split("T")[0],
+      date_created: new Date().toISOString().split("T")[0] || "", // Ensure string type
       status: "active",
       last_sync: "Never",
     };

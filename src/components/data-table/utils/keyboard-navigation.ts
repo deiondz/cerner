@@ -1,5 +1,5 @@
-import { Table } from "@tanstack/react-table";
-import { KeyboardEvent } from "react";
+import { type Table } from "@tanstack/react-table";
+import { type KeyboardEvent } from "react";
 
 /**
  * Creates a keyboard navigation handler for data tables

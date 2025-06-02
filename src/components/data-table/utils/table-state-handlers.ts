@@ -1,4 +1,4 @@
-import { SortingState } from "@tanstack/react-table";
+import { type SortingState } from "@tanstack/react-table";
 
 /**
  * Handler for sorting changes in a data table
