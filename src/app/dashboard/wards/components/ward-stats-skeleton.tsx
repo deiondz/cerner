@@ -1,16 +1,8 @@
 import { MapPin, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Ward } from "~/server/db/types";
+import { Skeleton } from "~/components/ui/skeleton";
 
-interface WardStatsProps {
-  wards: {
-    totalWorkers: number;
-    totalHouseholds: number;
-    totalWards: number;
-  };
-}
-
-export default function WardStats({ wards }: WardStatsProps) {
+export default function WardStatsSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
@@ -19,8 +11,8 @@ export default function WardStats({ wards }: WardStatsProps) {
           <MapPin className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{wards.totalWards}</div>
-          <p className="text-muted-foreground text-xs">Active Wards</p>
+          <Skeleton className="mb-2 h-8 w-[60px]" />
+          <Skeleton className="h-3 w-[80px]" />
         </CardContent>
       </Card>
       <Card>
@@ -29,8 +21,8 @@ export default function WardStats({ wards }: WardStatsProps) {
           <Users className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{wards.totalWorkers}</div>
-          <p className="text-muted-foreground text-xs">Across all wards</p>
+          <Skeleton className="mb-2 h-8 w-[60px]" />
+          <Skeleton className="h-3 w-[120px]" />
         </CardContent>
       </Card>
       <Card>
@@ -41,8 +33,8 @@ export default function WardStats({ wards }: WardStatsProps) {
           <MapPin className="text-muted-foreground h-4 w-4" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{wards.totalHouseholds}</div>
-          <p className="text-muted-foreground text-xs">Registered households</p>
+          <Skeleton className="mb-2 h-8 w-[60px]" />
+          <Skeleton className="h-3 w-[140px]" />
         </CardContent>
       </Card>
     </div>
