@@ -2,6 +2,7 @@ export type Ward = {
   wardId: string;
   wardName: string;
   supervisorId: string | null;
+  createdAt: string;
 };
 
 export type Household = {

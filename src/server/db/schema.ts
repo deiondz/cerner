@@ -19,6 +19,10 @@ export const wards = pgTable(
       .notNull(),
     wardName: text("ward_name").notNull(),
     supervisorId: uuid("supervisor_id"),
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+      mode: "string",
+    }).default(sql`(now() AT TIME ZONE 'utc'::text)`),
   },
   (table): { fk: ReturnType<typeof foreignKey> } => ({
     fk: foreignKey({

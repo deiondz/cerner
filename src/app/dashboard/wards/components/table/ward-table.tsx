@@ -6,25 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import type { Ward } from "~/server/db/types";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import WardsTable from ".";
+import { type Worker } from "~/server/db/types";
 
-interface WardTableProps {
-  wards: Ward[];
-}
-
-export default function WardTable({ wards }: WardTableProps) {
+export default function WardTable({ workers }: { workers: Worker[] }) {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="border-none">
+      <CardHeader className="p-0">
         <CardTitle>Wards</CardTitle>
         <CardDescription>
           A list of all administrative wards in the system
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <DataTable columns={columns} data={wards} />
+      <CardContent className="p-0">
+        <WardsTable workers={workers} />
       </CardContent>
     </Card>
   );

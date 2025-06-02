@@ -3,9 +3,10 @@ import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
-import { Sidebar } from "~/components/sidebar";
 import { Header } from "~/components/header";
+import { Sidebar } from "~/components/sidebar";
 import { Toaster } from "~/components/ui/sonner";
+import Providers from "~/lib/provider";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -23,18 +24,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geist.variable}`}>
-        <body>
-          <div className="bg-background flex h-screen">
-            <Sidebar />
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <Header />
-              <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <Providers>
+        <html lang="en" className={`${geist.variable}`}>
+          <body>
+            <div className="bg-background flex h-screen">
+              <Sidebar />
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <Header />
+                <main className="flex-1 overflow-y-auto p-6">{children}</main>
+              </div>
             </div>
-          </div>
-          <Toaster />
-        </body>
-      </html>
+            <Toaster />
+          </body>
+        </html>
+      </Providers>
     </ClerkProvider>
   );
 }

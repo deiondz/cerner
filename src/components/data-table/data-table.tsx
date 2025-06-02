@@ -112,7 +112,7 @@ interface DataTableProps<TData, TValue> {
   // Custom toolbar content render function
   renderToolbarContent?: (props: {
     selectedRows: TData[];
-    allSelectedIds: string[];
+    allSelectedIds: number[];
     totalSelectedCount: number;
     resetSelection: () => void;
   }) => React.ReactNode;
