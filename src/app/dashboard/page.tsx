@@ -12,6 +12,7 @@ import {
 import { BarChart3, Users, Home, MapPin, FileText, Scan } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import MaxWidthWrapper from "~/components/max-width-wrapper";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [userRole] = useState<"admin" | "supervisor" | "worker">("admin"); // Mock user role
@@ -179,12 +180,14 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-4">
-              <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
-                <CardContent className="p-4 text-center">
-                  <MapPin className="mx-auto mb-2 h-8 w-8 text-blue-600" />
-                  <p className="font-medium">Create Ward</p>
-                </CardContent>
-              </Card>
+              <Link href="/dashboard/wards">
+                <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
+                  <CardContent className="p-4 text-center">
+                    <MapPin className="mx-auto mb-2 h-8 w-8 text-blue-600" />
+                    <p className="font-medium">Create Ward</p>
+                  </CardContent>
+                </Card>
+              </Link>
               <Card className="hover:bg-muted/50 cursor-pointer transition-colors">
                 <CardContent className="p-4 text-center">
                   <Users className="mx-auto mb-2 h-8 w-8 text-green-600" />

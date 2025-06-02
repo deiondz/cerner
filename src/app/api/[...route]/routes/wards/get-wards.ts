@@ -57,12 +57,7 @@ app.get("/", async (c) => {
 
     // Search filter (search across multiple user fields)
     if (search) {
-      filters.push(
-        or(
-          ilike(wards.wardName, `%${search}%`),
-          ilike(wards.supervisorId, `%${search}%`),
-        ),
-      );
+      filters.push(ilike(wards.wardName, `%${search}%`));
     }
 
     // Date filtering based on user createdAt

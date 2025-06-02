@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 "use client";
 
 import * as React from "react";
@@ -263,6 +265,7 @@ export function DataTable<TData, TValue>({
             const rowIndex = parseInt(rowId, 10);
             if (rowIndex >= 0 && rowIndex < dataItems.length) {
               const item = dataItems[rowIndex];
+              if (!item) return;
               const itemId = String(item[idField]);
 
               if (isSelected) {
@@ -609,9 +612,7 @@ export function DataTable<TData, TValue>({
               selectedRows: dataItems.filter(
                 (item) => selectedItemIds[String(item[idField])],
               ),
-              allSelectedIds: Object.keys(selectedItemIds).map((id) =>
-                parseInt(id, 10),
-              ),
+              allSelectedIds: Object.keys(selectedItemIds).map((id) => id),
               totalSelectedCount: totalSelectedItems,
               resetSelection: clearAllSelections,
             })

@@ -10,51 +10,53 @@ import { wards } from "~/server/db/schema";
 const app = new Hono();
 
 // Input validation schema
-const addWardSchema = z.object({
+const updateWardSchema = z.object({
+  wardId: z.string().uuid("Invalid ward ID"),
   wardName: z.string().min(1, "Ward name is required").max(255),
   supervisorId: z.string().uuid("Invalid supervisor ID").optional(),
 });
 
 // POST /api/users/add
-app.post("/", async (c) => {
+app.put("/", async (c) => {
   try {
     // Parse and validate request body
     const body = await c.req.json();
-    const validatedData = addWardSchema.parse(body);
+    const validatedData = updateWardSchema.parse(body);
 
-    // Check if email already exists
+    // Check if ward already exists
     const existingWard = await db.query.wards.findFirst({
-      where: eq(wards.wardName, validatedData.wardName),
+      where: eq(wards.wardId, validatedData.wardId),
     });
 
-    if (existingWard) {
+    if (!existingWard) {
       return c.json(
         {
           success: false,
-          error: "Ward already exists",
+          error: "Ward not found",
         },
-        409,
+        404,
       );
     }
 
-    // Insert new user
-    const [newWard] = await db
-      .insert(wards)
-      .values({
+    // Update ward
+    const [updatedWard] = await db
+      .update(wards)
+      .set({
         wardName: validatedData.wardName,
         supervisorId: validatedData.supervisorId,
       })
+      .where(eq(wards.wardId, validatedData.wardId))
       .returning();
 
     return c.json(
       {
         success: true,
-        data: newWard,
+        data: updatedWard,
       },
-      201,
+      200,
     );
   } catch (error) {
-    console.error("Error adding ward:", error);
+    console.error("Error updating ward:", error);
 
     if (error instanceof z.ZodError) {
       return c.json(
