@@ -1,8 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
@@ -62,11 +64,21 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const [userRole] = useState<"admin" | "supervisor" | "worker">("admin"); // Mock user role
 
   const filteredNavigation = navigation.filter((item) =>
     item.roles.includes(userRole),
   );
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return (
     <div
@@ -83,7 +95,7 @@ export function Sidebar() {
               <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
                 <Scan className="text-primary-foreground h-4 w-4" />
               </div>
-              <span className="font-semibold">WasteTrack</span>
+              <span className="text-xl font-bold">Cerner</span>
             </div>
           )}
           <Button
@@ -101,14 +113,27 @@ export function Sidebar() {
         </div>
 
         {/* User Info */}
-        {!collapsed && (
+        {!collapsed && isLoaded && user && (
           <div className="border-b p-4">
             <div className="flex items-center space-x-3">
-              <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
-                <Users className="h-5 w-5" />
+              <div className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-full">
+                {user.imageUrl ? (
+                  <img
+                    src={user.imageUrl}
+                    alt={user.fullName ?? "User"}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Users className="h-5 w-5" />
+                )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">John Doe</p>
+                <p className="truncate text-sm font-medium">
+                  {user.fullName ??
+                    user.primaryEmailAddress?.emailAddress.substring(0, 20) +
+                      "..." ??
+                    "User"}
+                </p>
                 <div className="flex items-center space-x-2">
                   <Badge variant="secondary" className="text-xs">
                     {userRole}
@@ -134,7 +159,7 @@ export function Sidebar() {
                   variant={isActive ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
-                    collapsed ? "px-2" : "px-3",
+                    collapsed ? "h-9 w-9 p-0" : "px-3",
                   )}
                 >
                   <item.icon className={cn("h-4 w-4", !collapsed && "mr-3")} />
@@ -153,6 +178,7 @@ export function Sidebar() {
               "text-muted-foreground w-full justify-start",
               collapsed ? "px-2" : "px-3",
             )}
+            onClick={handleSignOut}
           >
             <LogOut className={cn("h-4 w-4", !collapsed && "mr-3")} />
             {!collapsed && "Sign Out"}
