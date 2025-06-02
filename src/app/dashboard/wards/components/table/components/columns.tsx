@@ -14,11 +14,14 @@ import { type Ward } from "../schema";
 
 // ** Import Table Row Actions
 import { DataTableRowActions } from "./row-actions";
+import type { Worker } from "~/server/db/types";
 
 export const getColumns = (
   handleRowDeselection: ((rowId: string) => void) | null | undefined,
+  workers: Worker[],
 ): ColumnDef<Ward>[] => {
   // Base columns without the select column
+
   const baseColumns: ColumnDef<Ward>[] = [
     {
       accessorKey: "wardId",
@@ -91,7 +94,9 @@ export const getColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Actions" />
       ),
-      cell: ({ row, table }) => <DataTableRowActions row={row} table={table} />,
+      cell: ({ row, table }) => (
+        <DataTableRowActions workers={workers} row={row} table={table} />
+      ),
       size: 100,
     },
   ];

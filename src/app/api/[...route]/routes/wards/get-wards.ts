@@ -21,6 +21,7 @@ const querySchema = z.object({
       "wardId",
       "wardName",
       "supervisorId",
+      "supervisorName",
       "createdAt",
       "householdCount",
       "workerCount",
@@ -134,6 +135,12 @@ app.get("/", async (c) => {
               FROM ${households}
               WHERE ${households.wardId} = ${wards.wardId}
             ) DESC`,
+      );
+    } else if (sort_by === "supervisorName") {
+      baseSelect.orderBy(
+        sort_order === "asc"
+          ? asc(workers.workerName)
+          : desc(workers.workerName),
       );
     } else {
       const column = wards[sort_by];

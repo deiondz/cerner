@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 "use client";
 
 import * as React from "react";
@@ -25,23 +22,23 @@ import { wardSchema } from "../schema";
 
 // ** Import Actions
 import { DeleteWardPopup } from "./actions/delete-ward-popup";
-
+import { UpdateWardPopup } from "./actions/update-ward-popup";
+import type { Worker } from "~/server/db/types";
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   table: any; // Table instance
+  workers: Worker[];
 }
 
 export function DataTableRowActions<TData>({
   row,
   table,
+  workers,
 }: DataTableRowActionsProps<TData>) {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [updateDialogOpen, setUpdateDialogOpen] = React.useState(false);
   const ward = wardSchema.parse(row.original);
-
-  const handleEdit = () => {
-    console.log(ward);
-  };
-
+  console.log(workers);
   // Function to reset all selections
   const resetSelection = () => {
     table.resetRowSelection();
@@ -60,7 +57,9 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setUpdateDialogOpen(true)}>
+            Edit
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)}>
             Delete
@@ -68,7 +67,14 @@ export function DataTableRowActions<TData>({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
+      <UpdateWardPopup
+        open={updateDialogOpen}
+        onOpenChange={setUpdateDialogOpen}
+        workers={workers}
+        wardId={ward.wardId}
+        currentWardName={ward.wardName}
+        currentSupervisorId={ward.supervisorId}
+      />
       <DeleteWardPopup
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}

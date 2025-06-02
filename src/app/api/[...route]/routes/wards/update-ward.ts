@@ -20,12 +20,25 @@ const updateWardSchema = z.object({
 app.put("/", async (c) => {
   try {
     // Parse and validate request body
+
+    const id = c.req.param("id");
+
+    if (!id) {
+      return c.json(
+        {
+          success: false,
+          error: "Ward ID is required",
+        },
+        400,
+      );
+    }
+
     const body = await c.req.json();
     const validatedData = updateWardSchema.parse(body);
 
     // Check if ward already exists
     const existingWard = await db.query.wards.findFirst({
-      where: eq(wards.wardId, validatedData.wardId),
+      where: eq(wards.wardId, id),
     });
 
     if (!existingWard) {
@@ -45,7 +58,7 @@ app.put("/", async (c) => {
         wardName: validatedData.wardName,
         supervisorId: validatedData.supervisorId,
       })
-      .where(eq(wards.wardId, validatedData.wardId))
+      .where(eq(wards.wardId, id))
       .returning();
 
     return c.json(

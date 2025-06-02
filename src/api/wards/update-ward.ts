@@ -52,13 +52,16 @@ export async function updateWard(
     const validatedData = updateWardSchema.parse(wardData);
 
     // Make API request
-    const response = await fetch(`${API_BASE_URL}/wards/update`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${API_BASE_URL}/wards/${validatedData.wardId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validatedData),
       },
-      body: JSON.stringify(validatedData),
-    });
+    );
 
     // Parse response
     const data = (await response.json()) as RawWardResponse;

@@ -19,7 +19,9 @@ import type { Worker } from "~/server/db/types";
 export default function WardsTable({ workers }: { workers: Worker[] }) {
   return (
     <DataTable<Ward, string>
-      getColumns={getColumns}
+      getColumns={(handleRowDeselection) =>
+        getColumns(handleRowDeselection, workers)
+      }
       exportConfig={useExportConfig()}
       fetchDataFn={useWardsData}
       idField="wardId"
