@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   foreignKey,
   numeric,
   pgTable,
@@ -75,6 +76,7 @@ export const workers = pgTable(
       .notNull(),
     workerName: text("worker_name").notNull(),
     contactNumber: text("contact_number").notNull(),
+    status: boolean().default(false),
     dateCreated: timestamp("date_created", {
       withTimezone: true,
       mode: "string",

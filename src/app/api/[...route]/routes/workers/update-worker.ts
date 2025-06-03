@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
-import { wards } from "~/server/db/schema";
+import { wards, workers } from "~/server/db/schema";
 import { revalidatePath } from "next/cache";
 
 // Create a new Hono app
@@ -12,9 +12,10 @@ const app = new Hono();
 
 // Input validation schema
 const updateWardSchema = z.object({
-  wardId: z.string().uuid("Invalid ward ID"),
-  wardName: z.string().min(1, "Ward name is required").max(255),
-  supervisorId: z.string().uuid("Invalid supervisor ID").optional(),
+  workerId: z.string().uuid("Invalid worker ID"),
+  workerName: z.string().min(1, "Worker name is required").max(255),
+  contactNumber: z.string().min(1, "Contact number is required").max(255),
+  wardId: z.string().uuid("Invalid ward ID").optional(),
 });
 
 // POST /api/users/add
@@ -52,21 +53,22 @@ app.put("/", async (c) => {
       );
     }
 
-    // Update ward
-    const [updatedWard] = await db
-      .update(wards)
+    // Update worker
+    const [updatedWorker] = await db
+      .update(workers)
       .set({
-        wardName: validatedData.wardName,
-        supervisorId: validatedData.supervisorId,
+        workerName: validatedData.workerName,
+        contactNumber: validatedData.contactNumber,
+        wardId: validatedData.wardId,
       })
-      .where(eq(wards.wardId, id))
+      .where(eq(workers.workerId, id))
       .returning();
 
-    revalidatePath("/dashboard/wards");
+    revalidatePath("/dashboard/workers");
     return c.json(
       {
         success: true,
-        data: updatedWard,
+        data: updatedWorker,
       },
       200,
     );

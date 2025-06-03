@@ -7,24 +7,23 @@ import { DataTable } from "./data-table";
 import { getColumns } from "./components/columns";
 import { useExportConfig } from "./utils/config";
 
-import { useWardsData } from "./utils/data-fetching";
-
 // ** Import Toolbar Options
 import { ToolbarOptions } from "./components/toolbar-options";
 
 // ** Import Types
-import { type Ward } from "./schema";
-import type { Worker } from "~/server/db/types";
 
-export default function WardsTable({ workers }: { workers: Worker[] }) {
+import type { Ward, WorkerTableData } from "~/server/db/types";
+import { useWorkersData } from "./utils/data-fetching";
+
+export default function WorkersTable({ wards }: { wards: Ward[] }) {
   return (
-    <DataTable<Ward, string>
+    <DataTable<WorkerTableData, string>
       getColumns={(handleRowDeselection) =>
-        getColumns(handleRowDeselection, workers)
+        getColumns(handleRowDeselection, wards)
       }
       exportConfig={useExportConfig()}
-      fetchDataFn={useWardsData}
-      idField="wardId"
+      fetchDataFn={useWorkersData}
+      idField="workerId"
       pageSizeOptions={[10, 20, 30, 40, 50, 100, 150]}
       renderToolbarContent={({
         selectedRows,
@@ -33,12 +32,12 @@ export default function WardsTable({ workers }: { workers: Worker[] }) {
         resetSelection,
       }) => (
         <ToolbarOptions
-          selectedWards={selectedRows.map((row) => ({
-            wardId: row.wardId,
-            wardName: row.wardName,
+          wards={wards}
+          selectedWorkers={selectedRows.map((row) => ({
+            workerId: row.workerId,
+            workerName: row.workerName,
           }))}
-          workers={workers}
-          allSelectedWardIds={allSelectedIds}
+          allSelectedWorkerIds={allSelectedIds}
           totalSelectedCount={totalSelectedCount}
           resetSelection={resetSelection}
         />
@@ -51,7 +50,7 @@ export default function WardsTable({ workers }: { workers: Worker[] }) {
         enableDateFilter: false,
         enableColumnVisibility: true,
         enableUrlState: true,
-        columnResizingTableId: "user-table",
+        columnResizingTableId: "worker-table",
       }}
     />
   );

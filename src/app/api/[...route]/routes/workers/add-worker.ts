@@ -4,59 +4,61 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
-import { wards } from "~/server/db/schema";
+import { wards, workers } from "~/server/db/schema";
 import { revalidatePath } from "next/cache";
 
 // Create a new Hono app
 const app = new Hono();
 
 // Input validation schema
-const addWardSchema = z.object({
-  wardName: z.string().min(1, "Ward name is required").max(255),
-  supervisorId: z.string().uuid("Invalid supervisor ID").optional(),
+const addWorkerSchema = z.object({
+  workerName: z.string().min(1, "Worker name is required").max(255),
+  contactNumber: z.string().min(1, "Contact number is required").max(255),
+  wardId: z.string().uuid("Invalid ward ID").optional(),
+  status: z.boolean().optional(),
 });
 
-// POST /api/users/add
+// POST /api/workers/add
 app.post("/", async (c) => {
   try {
     // Parse and validate request body
     const body = await c.req.json();
-    const validatedData = addWardSchema.parse(body);
+    const validatedData = addWorkerSchema.parse(body);
 
     // Check if email already exists
-    const existingWard = await db.query.wards.findFirst({
-      where: eq(wards.wardName, validatedData.wardName),
+    const existingWorker = await db.query.workers.findFirst({
+      where: eq(workers.contactNumber, validatedData.contactNumber),
     });
 
-    if (existingWard) {
+    if (existingWorker) {
       return c.json(
         {
           success: false,
-          error: "Ward already exists",
+          error: "Worker already exists",
         },
         409,
       );
     }
 
-    // Insert new user
-    const [newWard] = await db
-      .insert(wards)
+    const [newWorker] = await db
+      .insert(workers)
       .values({
-        wardName: validatedData.wardName,
-        supervisorId: validatedData.supervisorId,
+        workerName: validatedData.workerName,
+        contactNumber: validatedData.contactNumber,
+        wardId: validatedData.wardId,
+        status: validatedData.status,
       })
       .returning();
-
-    revalidatePath("/dashboard/wards");
+    revalidatePath("/dashboard/workers");
     return c.json(
       {
         success: true,
-        data: newWard,
+        data: newWorker,
       },
       201,
     );
   } catch (error) {
-    console.error("Error adding ward:", error);
+    console.error("Error adding worker:", error);
 
     if (error instanceof z.ZodError) {
       return c.json(

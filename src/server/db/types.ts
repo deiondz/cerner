@@ -20,6 +20,7 @@ export type Worker = {
   workerName: string;
   contactNumber: string;
   dateCreated: string;
+  status: boolean | null;
   wardId: string | null;
 };
 
@@ -45,4 +46,9 @@ export type WardTableData = Ward & {
   supervisorName: string | null;
   workerCount: number;
   householdCount: number;
+};
+
+export type WorkerTableData = Worker & {
+  wardName: string | null;
+  wardId: string | null;
 };

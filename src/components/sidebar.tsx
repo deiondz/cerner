@@ -134,23 +134,13 @@ export function Sidebar() {
                       "..." ??
                     "User"}
                 </p>
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {userRole}
-                  </Badge>
-                  {userRole === "supervisor" && (
-                    <span className="text-muted-foreground text-xs">
-                      Ward W01
-                    </span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-2 p-4">
+        <nav className="flex-1 gap-4 p-4">
           {filteredNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -158,8 +148,10 @@ export function Sidebar() {
                 <Button
                   variant={isActive ? "secondary" : "ghost"}
                   className={cn(
-                    "w-full justify-start",
-                    collapsed ? "h-9 w-9 p-0" : "px-3",
+                    "mt-1 w-full cursor-pointer justify-start transition-all duration-200",
+                    collapsed
+                      ? "flex h-9 w-9 items-center justify-center p-0"
+                      : "px-3",
                   )}
                 >
                   <item.icon className={cn("h-4 w-4", !collapsed && "mr-3")} />
@@ -175,8 +167,10 @@ export function Sidebar() {
           <Button
             variant="ghost"
             className={cn(
-              "text-muted-foreground w-full justify-start",
-              collapsed ? "px-2" : "px-3",
+              "w-full justify-start transition-all duration-200",
+              collapsed
+                ? "flex h-9 w-9 items-center justify-center p-0"
+                : "px-3",
             )}
             onClick={handleSignOut}
           >

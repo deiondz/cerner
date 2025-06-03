@@ -5,13 +5,13 @@ import { Hono } from "hono";
 // ** Import Drizzle
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
-import { wards } from "~/server/db/schema";
+import { wards, workers } from "~/server/db/schema";
 import { revalidatePath } from "next/cache";
 
 // Create a new Hono app
 const app = new Hono();
 
-// DELETE /api/wards/:id
+// DELETE /api/workers/:id
 app.delete("/", async (c) => {
   try {
     // Parse and validate ward ID
@@ -20,37 +20,40 @@ app.delete("/", async (c) => {
       return c.json(
         {
           success: false,
-          error: "Ward ID is required",
+          error: "Worker ID is required",
         },
         400,
       );
     }
 
-    // Check if ward exists
-    const [ward] = await db.select().from(wards).where(eq(wards.wardId, id));
+    // Check if worker exists
+    const [worker] = await db
+      .select()
+      .from(workers)
+      .where(eq(workers.workerId, id));
 
-    if (!ward) {
+    if (!worker) {
       return c.json(
         {
           success: false,
-          error: "Ward not found",
+          error: "Worker not found",
         },
         404,
       );
     }
 
-    // Then delete the ward
-    await db.delete(wards).where(eq(wards.wardId, id));
-    revalidatePath("/dashboard/wards");
+    // Then delete the worker
+    await db.delete(workers).where(eq(workers.workerId, id));
+    revalidatePath("/dashboard/workers");
     return c.json(
       {
         success: true,
-        message: "Ward deleted successfully",
+        message: "Worker deleted successfully",
       },
       200,
     );
   } catch (error) {
-    console.error("Error deleting ward:", error);
+    console.error("Error deleting worker:", error);
     return c.json(
       {
         success: false,
