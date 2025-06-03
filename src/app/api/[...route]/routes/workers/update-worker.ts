@@ -16,6 +16,7 @@ const updateWardSchema = z.object({
   workerName: z.string().min(1, "Worker name is required").max(255),
   contactNumber: z.string().min(1, "Contact number is required").max(255),
   wardId: z.string().uuid("Invalid ward ID").optional(),
+  status: z.boolean().optional(),
 });
 
 // POST /api/users/add
@@ -36,18 +37,19 @@ app.put("/", async (c) => {
     }
 
     const body = await c.req.json();
+
     const validatedData = updateWardSchema.parse(body);
 
     // Check if ward already exists
-    const existingWard = await db.query.wards.findFirst({
-      where: eq(wards.wardId, id),
+    const existingWorker = await db.query.workers.findFirst({
+      where: eq(workers.workerId, id),
     });
 
-    if (!existingWard) {
+    if (!existingWorker) {
       return c.json(
         {
           success: false,
-          error: "Ward not found",
+          error: "Worker not found",
         },
         404,
       );

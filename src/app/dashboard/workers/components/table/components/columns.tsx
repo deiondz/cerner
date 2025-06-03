@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "~/components/data-table/column-header";
 
 // ** Import UI Components
 import { Checkbox } from "~/components/ui/checkbox";
+import { Badge } from "~/components/ui/badge";
 
 // ** Import Table Row Actions
 import type { Ward, WorkerTableData } from "~/server/db/types";
@@ -80,7 +81,9 @@ export const getColumns = (
 
         return (
           <div className="flex items-center truncate">
-            <span className="truncate">{status ? "Active" : "Inactive"}</span>
+            <Badge variant={status ? "default" : "secondary"}>
+              {status ? "Active" : "Inactive"}
+            </Badge>
           </div>
         );
       },

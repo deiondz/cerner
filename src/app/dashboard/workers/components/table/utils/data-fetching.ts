@@ -37,7 +37,7 @@ export function useWorkersData(
         sort_by: sortBy,
         sort_order: sortOrder,
       }),
-    placeholderData: keepPreviousData, // Keep previous data when fetching new data. If skeleton animation is needed when fetching data, comment this out.
+    // placeholderData: keepPreviousData, // Keep previous data when fetching new data. If skeleton animation is needed when fetching data, comment this out.
   });
 }
 

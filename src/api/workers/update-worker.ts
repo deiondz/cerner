@@ -7,7 +7,9 @@ const API_BASE_URL = "/api";
 const updateWorkerSchema = z.object({
   workerId: z.string().uuid("Invalid worker ID"),
   workerName: z.string().min(1, "Worker name is required").max(255),
+  contactNumber: z.string().min(1, "Contact number is required").max(255),
   wardId: z.string().uuid("Invalid ward ID").optional(),
+  status: z.boolean().optional(),
 });
 
 // Response schema
