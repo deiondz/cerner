@@ -144,7 +144,7 @@ export function Sidebar() {
           {filteredNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link key={item.name} href={item.href}>
+              <Link key={item.name} prefetch={true} href={item.href}>
                 <Button
                   variant={isActive ? "secondary" : "ghost"}
                   className={cn(
