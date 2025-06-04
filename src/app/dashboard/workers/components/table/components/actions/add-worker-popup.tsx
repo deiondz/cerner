@@ -87,8 +87,10 @@ export function AddWorkerPopup({ wards }: { wards: Ward[] }) {
         toast.success("Worker added successfully");
         form.reset();
         setOpen(false);
-        router.refresh(); // Refresh the page to show new data
-        await queryClient.invalidateQueries({ queryKey: ["workers"] });
+
+        await queryClient.invalidateQueries({
+          queryKey: ["workers"],
+        });
       } else {
         toast.error(response.error ?? "Failed to add worker"); // TODO: Add error message
       }

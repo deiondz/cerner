@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 // ** Import API
 import { fetchWorkers } from "~/api/workers/fetch-worker";
@@ -37,7 +37,6 @@ export function useWorkersData(
         sort_by: sortBy,
         sort_order: sortOrder,
       }),
-    // placeholderData: keepPreviousData, // Keep previous data when fetching new data. If skeleton animation is needed when fetching data, comment this out.
   });
 }
 

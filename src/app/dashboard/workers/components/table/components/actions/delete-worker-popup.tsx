@@ -19,10 +19,10 @@ import {
 } from "~/components/ui/dialog";
 
 // ** Import API
-import { deleteWard } from "~/api/wards/delete-ward";
+
 import { deleteWorker } from "~/api/workers/delete-worker";
 
-interface DeleteWardPopupProps {
+interface DeleteWorkerPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   workerId: string;
@@ -30,14 +30,13 @@ interface DeleteWardPopupProps {
   resetSelection?: () => void;
 }
 
-export function DeleteWardPopup({
+export function DeleteWorkerPopup({
   open,
   onOpenChange,
   workerId,
   workerName,
   resetSelection,
-}: DeleteWardPopupProps) {
-  const router = useRouter();
+}: DeleteWorkerPopupProps) {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -49,9 +48,11 @@ export function DeleteWardPopup({
       if (response.success) {
         toast.success("Worker deleted successfully");
         onOpenChange(false);
-        // Refresh data
-        router.refresh();
-        await queryClient.invalidateQueries({ queryKey: ["workers"] });
+
+        await queryClient.invalidateQueries({
+          queryKey: ["workers"],
+        });
+
         // Reset the selection state if the function is provided
         if (resetSelection) {
           resetSelection();

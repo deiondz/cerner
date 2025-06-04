@@ -67,7 +67,7 @@ export function BulkDeletePopup({
 
       onOpenChange(false);
       resetSelection();
-      router.refresh();
+
       await queryClient.invalidateQueries({ queryKey: ["workers"] });
     } catch (error) {
       toast.error(

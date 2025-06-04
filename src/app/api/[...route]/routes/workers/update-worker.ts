@@ -66,7 +66,6 @@ app.put("/", async (c) => {
       .where(eq(workers.workerId, id))
       .returning();
 
-    revalidatePath("/dashboard/workers");
     return c.json(
       {
         success: true,

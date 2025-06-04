@@ -22,8 +22,9 @@ import { workerSchema } from "../schema";
 
 // ** Import Actions
 import type { Ward } from "~/server/db/types";
-import { DeleteWardPopup } from "./actions/delete-ward-popup";
+
 import { UpdateWorkerPopup } from "./actions/update-worker-popup";
+import { DeleteWorkerPopup } from "./actions/delete-worker-popup";
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   table: any; // Table instance
@@ -77,7 +78,7 @@ export function DataTableRowActions<TData>({
         open={updateDialogOpen}
         onOpenChange={setUpdateDialogOpen}
       />
-      <DeleteWardPopup
+      <DeleteWorkerPopup
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         workerId={worker.workerId}

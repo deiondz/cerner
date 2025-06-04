@@ -49,7 +49,7 @@ export function DeleteWardPopup({
         toast.success("Ward deleted successfully");
         onOpenChange(false);
         // Refresh data
-        router.refresh();
+
         await queryClient.invalidateQueries({ queryKey: ["wards"] });
         // Reset the selection state if the function is provided
         if (resetSelection) {

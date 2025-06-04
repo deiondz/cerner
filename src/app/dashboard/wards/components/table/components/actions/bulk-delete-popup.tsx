@@ -37,7 +37,6 @@ export function BulkDeletePopup({
   totalSelectedCount,
   resetSelection,
 }: BulkDeletePopupProps) {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -67,7 +66,7 @@ export function BulkDeletePopup({
 
       onOpenChange(false);
       resetSelection();
-      router.refresh();
+
       await queryClient.invalidateQueries({ queryKey: ["wards"] });
     } catch (error) {
       toast.error(

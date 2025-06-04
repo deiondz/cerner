@@ -10,8 +10,8 @@ import { Button } from "~/components/ui/button";
 
 // ** Import Actions
 import { type Ward } from "~/server/db/types";
-import { AddWorkerPopup } from "./actions/add-ward-popup";
 import { BulkDeletePopup } from "./actions/bulk-delete-popup";
+import { AddWorkerPopup } from "./actions/add-worker-popup";
 
 interface ToolbarOptionsProps {
   wards: Ward[];

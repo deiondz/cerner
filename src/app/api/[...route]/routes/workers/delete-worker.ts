@@ -44,7 +44,7 @@ app.delete("/", async (c) => {
 
     // Then delete the worker
     await db.delete(workers).where(eq(workers.workerId, id));
-    revalidatePath("/dashboard/workers");
+
     return c.json(
       {
         success: true,

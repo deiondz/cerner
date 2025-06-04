@@ -108,8 +108,9 @@ export function UpdateWorkerPopup({
         toast.success("Ward updated successfully");
         form.reset();
         onOpenChange(false);
-        router.refresh(); // Refresh the page to show updated data
-        await queryClient.invalidateQueries({ queryKey: ["workers"] });
+        await queryClient.invalidateQueries({
+          queryKey: ["workers"],
+        });
       } else {
         toast.error(response.error ?? "Failed to update ward");
       }

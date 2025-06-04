@@ -49,7 +49,7 @@ app.post("/", async (c) => {
         status: validatedData.status,
       })
       .returning();
-    revalidatePath("/dashboard/workers");
+
     return c.json(
       {
         success: true,
