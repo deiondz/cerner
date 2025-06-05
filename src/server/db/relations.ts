@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm/relations";
-import { workers, wards, households, scanlogs, citizenreports } from "./schema";
+import {
+  workers,
+  wards,
+  households,
+  scanlogs,
+  citizenreports,
+  tracker,
+} from "./schema";
 
 export const wardsRelations = relations(wards, ({ one, many }) => ({
   worker: one(workers, {
@@ -17,12 +24,12 @@ export const workersRelations = relations(workers, ({ one, many }) => ({
   wards: many(wards, {
     relationName: "wards_supervisorId_workers_workerId",
   }),
+  scanlogs: many(scanlogs),
   ward: one(wards, {
     fields: [workers.wardId],
     references: [wards.wardId],
     relationName: "workers_wardId_wards_wardId",
   }),
-  scanlogs: many(scanlogs),
 }));
 
 export const householdsRelations = relations(households, ({ one, many }) => ({
@@ -32,12 +39,13 @@ export const householdsRelations = relations(households, ({ one, many }) => ({
   }),
   scanlogs: many(scanlogs),
   citizenreports: many(citizenreports),
+  trackers: many(tracker),
 }));
 
 export const scanlogsRelations = relations(scanlogs, ({ one }) => ({
   household: one(households, {
-    fields: [scanlogs.nfcId],
-    references: [households.nfcId],
+    fields: [scanlogs.houseId],
+    references: [households.houseId],
   }),
   worker: one(workers, {
     fields: [scanlogs.workerId],
@@ -48,6 +56,13 @@ export const scanlogsRelations = relations(scanlogs, ({ one }) => ({
 export const citizenreportsRelations = relations(citizenreports, ({ one }) => ({
   household: one(households, {
     fields: [citizenreports.nfcId],
-    references: [households.nfcId],
+    references: [households.houseId],
+  }),
+}));
+
+export const trackerRelations = relations(tracker, ({ one }) => ({
+  household: one(households, {
+    fields: [tracker.houseId],
+    references: [households.houseId],
   }),
 }));

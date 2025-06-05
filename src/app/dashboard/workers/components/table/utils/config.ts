@@ -44,6 +44,6 @@ export function useExportConfig() {
     columnMapping,
     columnWidths,
     headers,
-    entityName: "workers",
+    entityName: "workers, phone number",
   };
 }

@@ -1,16 +1,59 @@
-import { sql } from "drizzle-orm";
 import {
-  boolean,
-  foreignKey,
-  numeric,
   pgTable,
+  type AnyPgColumn,
+  foreignKey,
+  uuid,
   text,
   timestamp,
+  numeric,
   unique,
-  uuid,
+  boolean,
+  bigint,
+  pgEnum,
+  type PgTableWithColumns,
   type UniqueConstraintBuilder,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
+export const methods = pgEnum("methods", ["nfc", "qr_code"]);
+
+// Define the workers table first to avoid circular reference
+export const workers = pgTable(
+  "workers",
+  {
+    workerId: uuid("worker_id")
+      .default(sql`uuid_generate_v4()`)
+      .primaryKey()
+      .notNull(),
+    workerName: text("worker_name").notNull(),
+    contactNumber: text("contact_number").notNull(),
+    dateCreated: timestamp("date_created", {
+      withTimezone: true,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    wardId: uuid("ward_id"),
+    status: boolean("status").default(false),
+  },
+  (
+    table,
+  ): {
+    fk: ReturnType<typeof foreignKey>;
+    uniqueContact: UniqueConstraintBuilder;
+  } => ({
+    fk: foreignKey({
+      columns: [table.wardId],
+      foreignColumns: [wards.wardId],
+      name: "workers_ward_id_fkey",
+    })
+      .onUpdate("cascade")
+      .onDelete("set null"),
+    uniqueContact: unique("workers_contact_number_key").on(table.contactNumber),
+  }),
+);
+
+// Define the type for the wards table
 export const wards = pgTable(
   "wards",
   {
@@ -37,7 +80,7 @@ export const wards = pgTable(
 export const households = pgTable(
   "households",
   {
-    nfcId: uuid("nfc_id")
+    houseId: uuid("house_id")
       .default(sql`uuid_generate_v4()`)
       .primaryKey()
       .notNull(),
@@ -56,49 +99,14 @@ export const households = pgTable(
       .defaultNow()
       .notNull(),
     status: text().notNull(),
-    wardId: uuid("ward_id").notNull(),
+    wardId: uuid("ward_id"),
   },
   (table): { fk: ReturnType<typeof foreignKey> } => ({
     fk: foreignKey({
       columns: [table.wardId],
       foreignColumns: [wards.wardId],
-      name: "households_ward_code_fkey",
-    }).onDelete("cascade"),
-  }),
-);
-
-export const workers = pgTable(
-  "workers",
-  {
-    workerId: uuid("worker_id")
-      .default(sql`uuid_generate_v4()`)
-      .primaryKey()
-      .notNull(),
-    workerName: text("worker_name").notNull(),
-    contactNumber: text("contact_number").notNull(),
-    status: boolean().default(false),
-    dateCreated: timestamp("date_created", {
-      withTimezone: true,
-      mode: "string",
-    })
-      .defaultNow()
-      .notNull(),
-    wardId: uuid("ward_id"),
-  },
-  (
-    table,
-  ): {
-    fk: ReturnType<typeof foreignKey>;
-    uniqueContact: UniqueConstraintBuilder;
-  } => ({
-    fk: foreignKey({
-      columns: [table.wardId],
-      foreignColumns: [wards.wardId],
-      name: "workers_ward_id_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    uniqueContact: unique("workers_contact_number_key").on(table.contactNumber),
+      name: "households_ward_id_fkey",
+    }).onDelete("set null"),
   }),
 );
 
@@ -109,8 +117,8 @@ export const scanlogs = pgTable(
       .default(sql`uuid_generate_v4()`)
       .primaryKey()
       .notNull(),
-    nfcId: uuid("nfc_id").notNull(),
-    workerId: uuid("worker_id").notNull(),
+    houseId: uuid("house_id").notNull(),
+    workerId: uuid("worker_id"),
     timestamp: timestamp({ withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
@@ -124,9 +132,9 @@ export const scanlogs = pgTable(
     fk2: ReturnType<typeof foreignKey>;
   } => ({
     fk1: foreignKey({
-      columns: [table.nfcId],
-      foreignColumns: [households.nfcId],
-      name: "scanlogs_nfc_id_fkey",
+      columns: [table.houseId],
+      foreignColumns: [households.houseId],
+      name: "scanlogs_house_id_fkey",
     }).onDelete("cascade"),
     fk2: foreignKey({
       columns: [table.workerId],
@@ -154,8 +162,34 @@ export const citizenreports = pgTable(
   (table): { fk: ReturnType<typeof foreignKey> } => ({
     fk: foreignKey({
       columns: [table.nfcId],
-      foreignColumns: [households.nfcId],
+      foreignColumns: [households.houseId],
       name: "citizenreports_nfc_id_fkey",
     }).onDelete("cascade"),
+  }),
+);
+
+export const tracker = pgTable(
+  "tracker",
+  {
+    id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
+      name: "tracker_id_seq",
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      maxValue: 9223372036854775807,
+      cache: 1,
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    method: methods().default("nfc").notNull(),
+    houseId: uuid("house_id"),
+  },
+  (table): { fk: ReturnType<typeof foreignKey> } => ({
+    fk: foreignKey({
+      columns: [table.houseId],
+      foreignColumns: [households.houseId],
+      name: "tracker_house_id_fkey",
+    }).onDelete("set null"),
   }),
 );

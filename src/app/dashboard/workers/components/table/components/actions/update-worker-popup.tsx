@@ -80,8 +80,6 @@ export function UpdateWorkerPopup({
   onOpenChange,
   open,
 }: UpdateWorkersPopupProps) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = React.useState(false);
 
   const queryClient = useQueryClient();

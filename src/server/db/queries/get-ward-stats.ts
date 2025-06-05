@@ -11,7 +11,7 @@ export async function getWardStats() {
       .from(workers),
     db
       .select({
-        totalHouseholds: sql<number>`count(${households.nfcId})`,
+        totalHouseholds: sql<number>`count(${households.houseId})`,
       })
       .from(households),
     db

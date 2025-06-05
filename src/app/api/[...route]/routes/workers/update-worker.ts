@@ -1,11 +1,10 @@
 import { Hono } from "hono";
 
 // ** Import 3rd Party Libs
-import { z } from "zod";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "~/server/db";
-import { wards, workers } from "~/server/db/schema";
-import { revalidatePath } from "next/cache";
+import { workers } from "~/server/db/schema";
 
 // Create a new Hono app
 const app = new Hono();
