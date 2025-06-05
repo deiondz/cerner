@@ -32,6 +32,7 @@ export const workersResponseSchema = z.object({
 
 export async function fetchWorkers({
   search = "",
+  ward = "",
   from_date = "",
   to_date = "",
   sort_by = "workerName",
@@ -40,6 +41,7 @@ export async function fetchWorkers({
   limit = 10,
 }: {
   search?: string;
+  ward?: string;
   from_date?: string;
   to_date?: string;
   sort_by?: string;
@@ -49,10 +51,11 @@ export async function fetchWorkers({
 }) {
   // Process search term - trim and sanitize
   const processedSearch = search ? search.trim().replace(/\s+/g, " ") : "";
-
+  const processedWard = ward ? ward.trim().replace(/\s+/g, " ") : "";
   // Build query parameters
   const params = new URLSearchParams();
   if (processedSearch) params.append("search", processedSearch);
+  if (processedWard) params.append("ward", processedWard);
   if (from_date) params.append("from_date", from_date);
   if (to_date) params.append("to_date", to_date);
   params.append("sort_by", sort_by);

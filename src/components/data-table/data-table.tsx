@@ -53,6 +53,8 @@ import {
   trackColumnResizing,
   cleanupColumnResizing,
 } from "~/components/data-table/utils/column-sizing";
+import { getAllWards } from "~/server/db/queries/get-all-wards";
+import { useQuery } from "@tanstack/react-query";
 
 interface DataTableProps<TData, TValue> {
   // Allow overriding the table configuration

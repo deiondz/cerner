@@ -21,6 +21,7 @@ export default function WorkersTable({ wards }: { wards: Ward[] }) {
       getColumns={(handleRowDeselection) =>
         getColumns(handleRowDeselection, wards)
       }
+      wards={wards}
       exportConfig={useExportConfig()}
       fetchDataFn={useWorkersData}
       idField="workerId"

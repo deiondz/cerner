@@ -27,6 +27,13 @@ import {
 } from "~/components/ui/popover";
 import { Separator } from "~/components/ui/separator";
 import { DataTableExport } from "./data-export";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -51,6 +58,9 @@ interface DataTableToolbarProps<TData> {
   columnWidths?: Array<{ wch: number }>;
   headers?: string[];
   customToolbarComponent?: React.ReactNode;
+  wards?: Array<{ wardId: string; wardName: string }>;
+  selectedWard?: string;
+  onWardChange?: (wardId: string) => void;
 }
 
 export function DataTableToolbar<TData>({
@@ -69,6 +79,9 @@ export function DataTableToolbar<TData>({
   columnWidths,
   headers,
   customToolbarComponent,
+  wards = [],
+  selectedWard,
+  onWardChange,
 }: DataTableToolbarProps<TData>) {
   // Get router and pathname for URL state reset
   const router = useRouter();
@@ -78,7 +91,7 @@ export function DataTableToolbar<TData>({
   const tableFiltered = table.getState().columnFilters.length > 0;
 
   // Get search value directly from URL query parameter
-  const searchParamFromUrl = searchParams.get("search") || "";
+  const searchParamFromUrl = searchParams?.get("search") || "";
   // Decode URL-encoded search parameter
   const decodedSearchParam = searchParamFromUrl
     ? decodeURIComponent(searchParamFromUrl)
@@ -103,7 +116,7 @@ export function DataTableToolbar<TData>({
       return;
     }
 
-    const searchFromUrl = searchParams.get("search") || "";
+    const searchFromUrl = searchParams?.get("search") || "";
     const decodedSearchFromUrl = searchFromUrl
       ? decodeURIComponent(searchFromUrl)
       : "";
@@ -131,7 +144,7 @@ export function DataTableToolbar<TData>({
     from: Date | undefined;
     to: Date | undefined;
   } => {
-    const dateRangeParam = searchParams.get("dateRange");
+    const dateRangeParam = searchParams?.get("dateRange");
     if (dateRangeParam) {
       try {
         const parsed = JSON.parse(dateRangeParam);
@@ -170,7 +183,8 @@ export function DataTableToolbar<TData>({
   }, []);
 
   // Determine if any filters are active
-  const isFiltered = tableFiltered || !!localSearch || datesModified;
+  const isFiltered =
+    tableFiltered || !!localSearch || datesModified || selectedWard;
 
   // Create a ref to store the debounce timer
   const searchDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -235,7 +249,7 @@ export function DataTableToolbar<TData>({
     // Reset search
     setLocalSearch("");
     setSearch("");
-
+    onWardChange?.("");
     // Reset dates to undefined (no filter)
     setDates({
       from: undefined,
@@ -249,7 +263,7 @@ export function DataTableToolbar<TData>({
 
     // Reset URL state by removing all query parameters, but only if URL state is enabled
     if (config.enableUrlState) {
-      resetUrlState(router, pathname);
+      resetUrlState(router, pathname || "");
     }
   };
 
@@ -273,6 +287,21 @@ export function DataTableToolbar<TData>({
             onChange={handleSearchChange}
             className="h-8 w-[150px] lg:w-[250px]"
           />
+        )}
+
+        {wards.length > 0 && (
+          <Select value={selectedWard} onValueChange={onWardChange}>
+            <SelectTrigger className="h-8 w-[180px]">
+              <SelectValue placeholder="Select ward" />
+            </SelectTrigger>
+            <SelectContent>
+              {wards.map((ward) => (
+                <SelectItem key={ward.wardId} value={ward.wardName}>
+                  {ward.wardName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
 
         {config.enableDateFilter && (

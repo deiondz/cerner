@@ -131,6 +131,7 @@ app.get("/", async (c) => {
     const totalCount = await db
       .select({ count: count() })
       .from(workers)
+      .leftJoin(wards, eq(workers.wardId, wards.wardId))
       .where(and(...filters))
       .then((result) => result[0]?.count ?? 0);
 

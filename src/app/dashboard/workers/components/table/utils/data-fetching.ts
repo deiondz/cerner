@@ -13,16 +13,19 @@ export function useWorkersData(
   page: number,
   pageSize: number,
   search: string,
+  ward: string,
   dateRange: { from_date: string; to_date: string },
   sortBy: string,
   sortOrder: string,
 ) {
+  console.log(ward);
   return useQuery({
     queryKey: [
       "workers",
       page,
       pageSize,
       preprocessSearch(search),
+      preprocessSearch(ward),
       dateRange,
       sortBy,
       sortOrder,
@@ -31,6 +34,7 @@ export function useWorkersData(
       fetchWorkers({
         page,
         limit: pageSize,
+        ward: preprocessSearch(ward),
         search: preprocessSearch(search),
         from_date: dateRange.from_date,
         to_date: dateRange.to_date,

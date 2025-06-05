@@ -55,6 +55,9 @@ import {
   trackColumnResizing,
   cleanupColumnResizing,
 } from "~/components/data-table/utils/column-sizing";
+import { getAllWards } from "~/server/db/queries/get-all-wards";
+import { useQuery } from "@tanstack/react-query";
+import type { Ward } from "~/server/db/types";
 
 interface DataTableProps<TData, TValue> {
   // Allow overriding the table configuration
@@ -71,6 +74,7 @@ interface DataTableProps<TData, TValue> {
         page: number;
         limit: number;
         search: string;
+        ward: string;
         from_date: string;
         to_date: string;
         sort_by: string;
@@ -89,6 +93,7 @@ interface DataTableProps<TData, TValue> {
         page: number,
         pageSize: number,
         search: string,
+        ward: string,
         dateRange: { from_date: string; to_date: string },
         sortBy: string,
         sortOrder: string,
@@ -111,6 +116,9 @@ interface DataTableProps<TData, TValue> {
   // Custom page size options
   pageSizeOptions?: number[];
 
+  // Wards
+  wards: Ward[];
+
   // Custom toolbar content render function
   renderToolbarContent?: (props: {
     selectedRows: TData[];
@@ -124,6 +132,7 @@ export function DataTable<TData, TValue>({
   config = {},
   getColumns,
   fetchDataFn,
+  wards,
   fetchByIdsFn,
   exportConfig,
   idField = "id" as keyof TData,
@@ -149,6 +158,10 @@ export function DataTable<TData, TValue>({
   const [page, setPage] = useConditionalUrlState("page", 1);
   const [pageSize, setPageSize] = useConditionalUrlState("pageSize", 10);
   const [search, setSearch] = useConditionalUrlState("search", "");
+  const [selectedWard, setSelectedWard] = useConditionalUrlState<string>(
+    "ward",
+    "",
+  );
   const [dateRange, setDateRange] = useConditionalUrlState<{
     from_date: string;
     to_date: string;
@@ -357,6 +370,7 @@ export function DataTable<TData, TValue>({
             page,
             limit: pageSize,
             search: preprocessSearch(search),
+            ward: preprocessSearch(selectedWard),
             from_date: dateRange.from_date,
             to_date: dateRange.to_date,
             sort_by: sortBy,
@@ -376,7 +390,16 @@ export function DataTable<TData, TValue>({
 
       fetchData();
     }
-  }, [page, pageSize, search, dateRange, sortBy, sortOrder, fetchDataFn]);
+  }, [
+    page,
+    pageSize,
+    search,
+    selectedWard,
+    dateRange,
+    sortBy,
+    sortOrder,
+    fetchDataFn,
+  ]);
 
   // If fetchDataFn is a React Query hook, call it directly with parameters
   const queryResult =
@@ -385,6 +408,7 @@ export function DataTable<TData, TValue>({
           page,
           pageSize,
           search,
+          selectedWard,
           dateRange,
           sortBy,
           sortOrder,
@@ -593,6 +617,9 @@ export function DataTable<TData, TValue>({
           deleteSelection={clearAllSelections}
           getSelectedItems={getSelectedItems}
           getAllItems={getAllItems}
+          selectedWard={selectedWard}
+          onWardChange={setSelectedWard}
+          wards={wards}
           config={tableConfig}
           resetColumnSizing={() => {
             resetColumnSizing();
