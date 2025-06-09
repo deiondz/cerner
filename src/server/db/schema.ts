@@ -5,12 +5,11 @@ import {
   uuid,
   text,
   timestamp,
+  bigint,
   numeric,
   unique,
   boolean,
-  bigint,
   pgEnum,
-  type PgTableWithColumns,
   type UniqueConstraintBuilder,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
@@ -34,7 +33,7 @@ export const workers = pgTable(
       .defaultNow()
       .notNull(),
     wardId: uuid("ward_id"),
-    status: boolean("status").default(false),
+    status: boolean().default(false),
   },
   (
     table,
@@ -53,7 +52,6 @@ export const workers = pgTable(
   }),
 );
 
-// Define the type for the wards table
 export const wards = pgTable(
   "wards",
   {
@@ -100,9 +98,20 @@ export const households = pgTable(
       .notNull(),
     status: text().notNull(),
     wardId: uuid("ward_id"),
+    trackerId: bigint("tracker_id", { mode: "number" }),
   },
-  (table): { fk: ReturnType<typeof foreignKey> } => ({
-    fk: foreignKey({
+  (
+    table,
+  ): {
+    fk1: ReturnType<typeof foreignKey>;
+    fk2: ReturnType<typeof foreignKey>;
+  } => ({
+    fk1: foreignKey({
+      columns: [table.trackerId],
+      foreignColumns: [tracker.id],
+      name: "households_tracker_id_fkey",
+    }).onDelete("set null"),
+    fk2: foreignKey({
       columns: [table.wardId],
       foreignColumns: [wards.wardId],
       name: "households_ward_id_fkey",
@@ -168,28 +177,17 @@ export const citizenreports = pgTable(
   }),
 );
 
-export const tracker = pgTable(
-  "tracker",
-  {
-    id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
-      name: "tracker_id_seq",
-      startWith: 1,
-      increment: 1,
-      minValue: 1,
-      maxValue: 9223372036854775807,
-      cache: 1,
-    }),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
-      .defaultNow()
-      .notNull(),
-    method: methods().default("nfc").notNull(),
-    houseId: uuid("house_id"),
-  },
-  (table): { fk: ReturnType<typeof foreignKey> } => ({
-    fk: foreignKey({
-      columns: [table.houseId],
-      foreignColumns: [households.houseId],
-      name: "tracker_house_id_fkey",
-    }).onDelete("set null"),
+export const tracker = pgTable("tracker", {
+  id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({
+    name: "tracker_id_seq",
+    startWith: 1,
+    increment: 1,
+    minValue: 1,
+    maxValue: 9223372036854775807,
+    cache: 1,
   }),
-);
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  method: methods().default("nfc").notNull(),
+});

@@ -2,10 +2,10 @@ import { relations } from "drizzle-orm/relations";
 import {
   workers,
   wards,
+  tracker,
   households,
   scanlogs,
   citizenreports,
-  tracker,
 } from "./schema";
 
 export const wardsRelations = relations(wards, ({ one, many }) => ({
@@ -33,13 +33,20 @@ export const workersRelations = relations(workers, ({ one, many }) => ({
 }));
 
 export const householdsRelations = relations(households, ({ one, many }) => ({
+  tracker: one(tracker, {
+    fields: [households.trackerId],
+    references: [tracker.id],
+  }),
   ward: one(wards, {
     fields: [households.wardId],
     references: [wards.wardId],
   }),
   scanlogs: many(scanlogs),
   citizenreports: many(citizenreports),
-  trackers: many(tracker),
+}));
+
+export const trackerRelations = relations(tracker, ({ many }) => ({
+  households: many(households),
 }));
 
 export const scanlogsRelations = relations(scanlogs, ({ one }) => ({
@@ -56,13 +63,6 @@ export const scanlogsRelations = relations(scanlogs, ({ one }) => ({
 export const citizenreportsRelations = relations(citizenreports, ({ one }) => ({
   household: one(households, {
     fields: [citizenreports.nfcId],
-    references: [households.houseId],
-  }),
-}));
-
-export const trackerRelations = relations(tracker, ({ one }) => ({
-  household: one(households, {
-    fields: [tracker.houseId],
     references: [households.houseId],
   }),
 }));

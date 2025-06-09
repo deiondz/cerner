@@ -6,13 +6,14 @@ export type Ward = {
 };
 
 export type Household = {
-  nfcId: string;
+  houseId: string;
   ownerNumber: string;
   address: string;
   dateCreated: string;
   dateUpdated: string;
   status: string;
-  wardId: string;
+  wardId: string | null;
+  trackerId: number | null;
 };
 
 export type Worker = {
@@ -51,4 +52,8 @@ export type WardTableData = Ward & {
 export type WorkerTableData = Worker & {
   wardName: string | null;
   wardId: string | null;
+};
+
+export type HouseholdTableData = Household & {
+  wardName: string | null;
 };

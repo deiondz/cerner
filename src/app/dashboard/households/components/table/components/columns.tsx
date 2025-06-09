@@ -8,35 +8,69 @@ import { DataTableColumnHeader } from "~/components/data-table/column-header";
 
 // ** Import UI Components
 import { Checkbox } from "~/components/ui/checkbox";
-
-// ** Import Schema
-import { type Ward } from "../schema";
+import { Badge } from "~/components/ui/badge";
 
 // ** Import Table Row Actions
+import type { Ward } from "~/server/db/types";
 import { DataTableRowActions } from "./row-actions";
-import type { Worker } from "~/server/db/types";
+import type { Household } from "../schema";
 
 export const getColumns = (
   handleRowDeselection: ((rowId: string) => void) | null | undefined,
-  workers: Worker[],
-): ColumnDef<Ward>[] => {
+  wards: Ward[],
+): ColumnDef<Household>[] => {
   // Base columns without the select column
-
-  const baseColumns: ColumnDef<Ward>[] = [
+  const baseColumns: ColumnDef<Household>[] = [
     {
-      accessorKey: "wardId",
+      accessorKey: "houseId",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Ward ID" />
+        <DataTableColumnHeader column={column} title="House ID" />
       ),
       cell: ({ row }) => (
-        <div className="truncate text-left">{row.getValue("wardId")}</div>
+        <div className="truncate text-left">{row.getValue("houseId")}</div>
       ),
       size: 70,
     },
     {
+      accessorKey: "trackerId",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Tracker ID" />
+      ),
+      cell: ({ row }) => (
+        <div className="truncate text-left">
+          {row.getValue("trackerId") ?? "N/A"}
+        </div>
+      ),
+      size: 70,
+    },
+    {
+      accessorKey: "ownerNumber",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Owner Number" />
+      ),
+      cell: ({ row }) => (
+        <div className="truncate text-left font-medium">
+          {row.getValue("ownerNumber")}
+        </div>
+      ),
+      size: 200,
+    },
+    {
+      accessorKey: "address",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Address" />
+      ),
+      cell: ({ row }) => (
+        <div className="truncate text-left font-medium">
+          {row.getValue("address")}
+        </div>
+      ),
+      size: 200,
+    },
+    {
       accessorKey: "wardName",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Name" />
+        <DataTableColumnHeader column={column} title="Ward" />
       ),
       cell: ({ row }) => (
         <div className="truncate text-left font-medium">
@@ -46,48 +80,34 @@ export const getColumns = (
       size: 200,
     },
     {
-      accessorKey: "supervisorName",
+      accessorKey: "status",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Supervisor" />
+        <DataTableColumnHeader column={column} title="Status" />
       ),
       cell: ({ row }) => {
-        return (
-          <div className="flex space-x-2 truncate">
-            <span className="truncate font-medium">
-              {row.getValue("supervisorName") ?? "N/A"}
-            </span>
-          </div>
-        );
-      },
-      size: 250,
-    },
-    {
-      accessorKey: "workerCount",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Workers" />
-      ),
-      cell: ({ row }) => {
+        const status = row.getValue("status");
+
         return (
           <div className="flex items-center truncate">
-            <span className="truncate">{row.getValue("workerCount")}</span>
+            <Badge variant={status === "active" ? "default" : "secondary"}>
+              {status === "active" ? "Active" : "Inactive"}
+            </Badge>
           </div>
         );
       },
       size: 150,
     },
     {
-      accessorKey: "householdCount",
+      accessorKey: "dateCreated",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Households" />
+        <DataTableColumnHeader column={column} title="Date Created" />
       ),
-      cell: ({ row }) => {
-        return (
-          <div className="max-w-full truncate text-left">
-            {row.getValue("householdCount")}
-          </div>
-        );
-      },
-      size: 80,
+      cell: ({ row }) => (
+        <div className="truncate text-left font-medium">
+          {row.getValue("dateCreated")}
+        </div>
+      ),
+      size: 200,
     },
     {
       id: "actions",
@@ -95,7 +115,7 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="Actions" />
       ),
       cell: ({ row, table }) => (
-        <DataTableRowActions workers={workers} row={row} table={table} />
+        <DataTableRowActions row={row} table={table} wards={wards} />
       ),
       size: 100,
     },
